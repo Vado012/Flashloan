@@ -13,8 +13,8 @@ function HomeRow5() {
     const loanTarget = 156000;
     const interestTarget = 5.6;
 
-    const duration = 2000; // animation duration in ms
-    const intervalTime = 20; // update every 20ms
+    const duration = 2000;
+    const intervalTime = 20;
     const steps = duration / intervalTime;
 
     let p = 0, l = 0, i = 0;
@@ -28,9 +28,9 @@ function HomeRow5() {
       l += loanStep;
       i += interestStep;
 
-      setProjects((prev) => (p > projectTarget ? projectTarget : Math.floor(p)));
-      setLoans((prev) => (l > loanTarget ? loanTarget : Math.floor(l)));
-      setInterest((prev) => (i > interestTarget ? interestTarget : +i.toFixed(1)));
+      setProjects(p > projectTarget ? projectTarget : Math.floor(p));
+      setLoans(l > loanTarget ? loanTarget : Math.floor(l));
+      setInterest(i > interestTarget ? interestTarget : +i.toFixed(1));
 
       if (p >= projectTarget && l >= loanTarget && i >= interestTarget) {
         clearInterval(interval);
@@ -41,45 +41,59 @@ function HomeRow5() {
   }, []);
 
   return (
-    <div className="h-[180px] flex justify-center items-center">
-      <div className="gap-10 max-w-5xl flex justify-between px-6 w-full">
+    <section className="py-12 bg-white">
+      <div className="max-w-6xl mx-auto px-6">
 
-        <div
-          className={`text-center transition-all duration-1000 ${
-            loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <p className="text-2xl text-blue-500 font-bold">Projects Done</p>
-          <h1 className="text-3xl font-bold text-yellow-500">
-            {projects.toLocaleString()}
-          </h1>
+        {/* Responsive Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-center">
+
+          {/* Projects */}
+          <div
+            className={`transition-all duration-1000 ${
+              loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            }`}
+          >
+            <p className="text-lg sm:text-xl md:text-2xl text-blue-500 font-semibold">
+              Projects Done
+            </p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-yellow-500 mt-2">
+              {projects.toLocaleString()}
+            </h1>
+          </div>
+
+          {/* Loans */}
+          <div
+            className={`transition-all duration-1000 delay-150 ${
+              loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            }`}
+          >
+            <p className="text-lg sm:text-xl md:text-2xl text-blue-500 font-semibold">
+              Loan Increase
+            </p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-yellow-500 mt-2">
+              {loans.toLocaleString()}
+            </h1>
+          </div>
+
+          {/* Interest */}
+          <div
+            className={`transition-all duration-1000 delay-300 ${
+              loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            }`}
+          >
+            <p className="text-lg sm:text-xl md:text-2xl text-blue-500 font-semibold">
+              Offer Low Interest
+            </p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-yellow-500 mt-2">
+              {interest}%
+            </h1>
+          </div>
+
         </div>
-
-        <div
-          className={`text-center transition-all duration-1000 delay-150 ${
-            loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <p className="text-2xl text-blue-500 font-bold">Loan Increase</p>
-          <h1 className="text-3xl font-bold text-yellow-500">
-            {loans.toLocaleString()}
-          </h1>
-        </div>
-
-        <div
-          className={`text-center transition-all duration-1000 delay-300 ${
-            loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <p className="text-2xl text-blue-500 font-bold">Offer Low Interest</p>
-          <h1 className="text-3xl font-bold text-yellow-500">
-            {interest}%
-          </h1>
-        </div>
-
       </div>
-    </div>
+    </section>
   );
 }
 
 export default HomeRow5;
+
