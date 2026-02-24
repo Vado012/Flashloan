@@ -23,23 +23,24 @@ function UserDashboard() {
     try {
       const response = await fetch("https://loanbackend-tafg.onrender.com/api/user/profile", {
         headers: { Authorization: `Bearer ${token}` },
-        credentials:'include'
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
-        setUser(data);
+        setUser(data.user || data);
       }
     } catch (err) {
       console.error(err);
     }
 
     try {
-      const response = await fetch("https://loanbackend-tafg.onrender.com/api/loans/my-loans", {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await fetch("https://loanbackend-tafg.onrender.com/api/loan", {
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
-        setLoans(data);
+        setLoans(data.loans || data);
       }
     } catch (err) {
       console.error(err);
@@ -52,9 +53,9 @@ function UserDashboard() {
     navigate("/login");
   };
 
-  const activeLoans = loans.filter(l => l.status === "active").length;
-  const totalBorrowed = loans.reduce((sum, l) => sum + (l.amount || 0), 0);
-  const totalRepaid = loans.reduce((sum, l) => sum + (l.repaid || 0), 0);
+  const activeLoans = loans.filter(l => l.status === "approved" || l.status === "active").length;
+  const totalBorrowed = loans.reduce((sum, l) => sum + (parseFloat(l.amount) || 0), 0);
+  const totalRepaid = loans.reduce((sum, l) => sum + (parseFloat(l.repaid) || 0), 0);
 
   return (
     <div className="flex h-screen bg-gray-100 font-sans">
@@ -86,9 +87,9 @@ function UserDashboard() {
             <FiBell className="text-xl text-gray-600 cursor-pointer" />
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-blue-950">
-                {user.name?.[0] || "U"}
+                {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
               </div>
-              <span className="text-gray-700 font-medium">{user.name}</span>
+              <span className="text-gray-700 font-medium">{user.name || user.email || "User"}</span>
             </div>
           </div>
         </header>
@@ -128,17 +129,17 @@ function UserDashboard() {
                   </thead>
                   <tbody>
                     {loans.map((loan, i) => (
-                      <tr key={i} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                        <td className="py-2">${loan.amount?.toLocaleString()}</td>
+                      <tr key={loan._id || i} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td className="py-2">${parseFloat(loan.amount || 0).toLocaleString()}</td>
                         <td className="py-2">
                           <span className={`font-semibold ${
-                            loan.status === "approved" ? "text-green-600" :
+                            loan.status === "approved" || loan.status === "active" ? "text-green-600" :
                             loan.status === "pending" ? "text-yellow-500" : "text-red-500"
                           }`}>
                             {loan.status}
                           </span>
                         </td>
-                        <td className="py-2">{new Date(loan.createdAt).toLocaleDateString()}</td>
+                        <td className="py-2">{loan.createdAt ? new Date(loan.createdAt).toLocaleDateString() : "N/A"}</td>
                         <td className="py-2">{loan.dueDate ? new Date(loan.dueDate).toLocaleDateString() : "N/A"}</td>
                       </tr>
                     ))}

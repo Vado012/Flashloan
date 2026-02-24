@@ -19,24 +19,22 @@ function Dashboard() {
 
   const fetchAdminData = async (token) => {
     try {
-      const response = await fetch("https://loanbackend-tafg.onrender.com/api/admin/stats", {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await fetch("https://loanbackend-tafg.onrender.com/api/loan", {
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
-        setStats(data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-
-    try {
-      const response = await fetch("https://loanbackend-tafg.onrender.com/api/admin/recent-loans", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setRecentLoans(data);
+        const allLoans = data.loans || data;
+        
+        // Calculate stats from loans
+        const totalLoans = allLoans.length;
+        const activeLoans = allLoans.filter(l => l.status === "approved" || l.status === "active").length;
+        const totalAmount = allLoans.reduce((sum, l) => sum + (parseFloat(l.amount) || 0), 0);
+        const interestEarned = totalAmount * 0.05; // Assuming 5% interest
+        
+        setStats({ totalLoans, activeLoans, interestEarned, totalCustomers: totalLoans });
+        setRecentLoans(allLoans.slice(0, 5));
       }
     } catch (err) {
       console.error(err);
@@ -144,18 +142,18 @@ function Dashboard() {
                     <tr><td colSpan="4" className="py-4 text-center text-gray-500">No recent activity</td></tr>
                   ) : (
                     recentLoans.map((loan, i) => (
-                      <tr key={i} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                        <td className="py-2">{loan.customerName || "N/A"}</td>
-                        <td className="py-2">${loan.amount?.toLocaleString()}</td>
+                      <tr key={loan._id || i} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td className="py-2">{loan.userId?.name || loan.userId?.email || "N/A"}</td>
+                        <td className="py-2">${parseFloat(loan.amount || 0).toLocaleString()}</td>
                         <td className="py-2">
                           <span className={`font-semibold ${
-                            loan.status === "approved" ? "text-green-600" :
+                            loan.status === "approved" || loan.status === "active" ? "text-green-600" :
                             loan.status === "pending" ? "text-yellow-500" : "text-red-500"
                           }`}>
                             {loan.status}
                           </span>
                         </td>
-                        <td className="py-2">{new Date(loan.createdAt).toLocaleDateString()}</td>
+                        <td className="py-2">{loan.createdAt ? new Date(loan.createdAt).toLocaleDateString() : "N/A"}</td>
                       </tr>
                     ))
                   )}
