@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiHome, FiUser, FiFileText, FiPieChart, FiSettings, FiBell, FiLogOut } from "react-icons/fi";
+import { FiHome, FiUser, FiFileText, FiPieChart, FiSettings, FiBell, FiLogOut, FiTrash2, FiEdit } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
@@ -7,6 +7,8 @@ function Dashboard() {
   const [stats, setStats] = useState({ totalLoans: 0, activeLoans: 0, interestEarned: 0, totalCustomers: 0 });
   const [recentLoans, setRecentLoans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingLoan, setEditingLoan] = useState(null);
+  const [newStatus, setNewStatus] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -45,6 +47,54 @@ function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
+  };
+
+  const handleDeleteLoan = async (loanId) => {
+    if (!confirm("Are you sure you want to delete this loan?")) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`https://loanbackend-tafg.onrender.com/api/loan/${loanId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        fetchAdminData(token);
+      } else {
+        alert("Failed to delete loan");
+      }
+    } catch (err) {
+      alert("Error deleting loan");
+    }
+  };
+
+  const handleUpdateLoan = async (loanId) => {
+    if (!newStatus) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`https://loanbackend-tafg.onrender.com/api/loan/${loanId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus }),
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        setEditingLoan(null);
+        setNewStatus("");
+        fetchAdminData(token);
+      } else {
+        alert("Failed to update loan");
+      }
+    } catch (err) {
+      alert("Error updating loan");
+    }
   };
 
   return (
@@ -133,27 +183,78 @@ function Dashboard() {
                     <th className="py-2">Loan Amount</th>
                     <th className="py-2">Status</th>
                     <th className="py-2">Date</th>
+                    <th className="py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan="4" className="py-4 text-center text-gray-500">Loading...</td></tr>
+                    <tr><td colSpan="5" className="py-4 text-center text-gray-500">Loading...</td></tr>
                   ) : recentLoans.length === 0 ? (
-                    <tr><td colSpan="4" className="py-4 text-center text-gray-500">No recent activity</td></tr>
+                    <tr><td colSpan="5" className="py-4 text-center text-gray-500">No recent activity</td></tr>
                   ) : (
                     recentLoans.map((loan, i) => (
                       <tr key={loan._id || i} className="border-b border-gray-200 hover:bg-gray-50 transition">
                         <td className="py-2">{loan.userId?.name || loan.userId?.email || "N/A"}</td>
                         <td className="py-2">${parseFloat(loan.amount || 0).toLocaleString()}</td>
                         <td className="py-2">
-                          <span className={`font-semibold ${
-                            loan.status === "approved" || loan.status === "active" ? "text-green-600" :
-                            loan.status === "pending" ? "text-yellow-500" : "text-red-500"
-                          }`}>
-                            {loan.status}
-                          </span>
+                          {editingLoan === loan._id ? (
+                            <select
+                              value={newStatus}
+                              onChange={(e) => setNewStatus(e.target.value)}
+                              className="border border-gray-300 rounded px-2 py-1 text-xs"
+                            >
+                              <option value="">Select status</option>
+                              <option value="pending">Pending</option>
+                              <option value="approved">Approved</option>
+                              <option value="rejected">Rejected</option>
+                            </select>
+                          ) : (
+                            <span className={`font-semibold ${
+                              loan.status === "approved" || loan.status === "active" ? "text-green-600" :
+                              loan.status === "pending" ? "text-yellow-500" : "text-red-500"
+                            }`}>
+                              {loan.status}
+                            </span>
+                          )}
                         </td>
                         <td className="py-2">{loan.createdAt ? new Date(loan.createdAt).toLocaleDateString() : "N/A"}</td>
+                        <td className="py-2">
+                          <div className="flex gap-2">
+                            {editingLoan === loan._id ? (
+                              <>
+                                <button
+                                  onClick={() => handleUpdateLoan(loan._id)}
+                                  className="text-green-600 hover:text-green-800 font-semibold text-xs"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => { setEditingLoan(null); setNewStatus(""); }}
+                                  className="text-gray-600 hover:text-gray-800 font-semibold text-xs"
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => { setEditingLoan(loan._id); setNewStatus(loan.status); }}
+                                  className="text-blue-600 hover:text-blue-800"
+                                  title="Edit"
+                                >
+                                  <FiEdit size={16} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteLoan(loan._id)}
+                                  className="text-red-600 hover:text-red-800"
+                                  title="Delete"
+                                >
+                                  <FiTrash2 size={16} />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
                       </tr>
                     ))
                   )}
