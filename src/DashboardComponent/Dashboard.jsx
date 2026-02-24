@@ -1,7 +1,54 @@
-import React from "react";
-import { FiHome, FiUser, FiFileText, FiPieChart, FiSettings, FiBell } from "react-icons/fi";
+import React, { useState, useEffect } from "react";
+import { FiHome, FiUser, FiFileText, FiPieChart, FiSettings, FiBell, FiLogOut } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({ totalLoans: 0, activeLoans: 0, interestEarned: 0, totalCustomers: 0 });
+  const [recentLoans, setRecentLoans] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    fetchAdminData(token);
+  }, []);
+
+  const fetchAdminData = async (token) => {
+    try {
+      const response = await fetch("https://loanbackend-tafg.onrender.com/api/admin/stats", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    try {
+      const response = await fetch("https://loanbackend-tafg.onrender.com/api/admin/recent-loans", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setRecentLoans(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <div className="flex h-screen bg-gray-100 font-sans">
 
@@ -25,7 +72,9 @@ function Dashboard() {
             <FiSettings /> Settings
           </a>
         </nav>
-        <div className="px-6 py-4 text-sm text-gray-400">© {new Date().getFullYear()} FlashLoan</div>
+        <button onClick={handleLogout} className="mx-4 mb-4 flex items-center gap-3 py-2 px-3 rounded hover:bg-red-600 transition">
+          <FiLogOut /> Logout
+        </button>
       </aside>
 
       {/* Main Content */}
@@ -48,19 +97,19 @@ function Dashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
               <p className="text-gray-500">Total Loans</p>
-              <h2 className="text-2xl font-bold text-blue-950">156,000</h2>
+              <h2 className="text-2xl font-bold text-blue-950">{loading ? "..." : stats.totalLoans?.toLocaleString()}</h2>
             </div>
             <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
               <p className="text-gray-500">Active Loans</p>
-              <h2 className="text-2xl font-bold text-blue-950">3,472</h2>
+              <h2 className="text-2xl font-bold text-blue-950">{loading ? "..." : stats.activeLoans?.toLocaleString()}</h2>
             </div>
             <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
               <p className="text-gray-500">Interest Earned</p>
-              <h2 className="text-2xl font-bold text-blue-950">$12,345</h2>
+              <h2 className="text-2xl font-bold text-blue-950">{loading ? "..." : `$${stats.interestEarned?.toLocaleString()}`}</h2>
             </div>
             <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
               <p className="text-gray-500">Total Customers</p>
-              <h2 className="text-2xl font-bold text-blue-950">1,245</h2>
+              <h2 className="text-2xl font-bold text-blue-950">{loading ? "..." : stats.totalCustomers?.toLocaleString()}</h2>
             </div>
           </div>
 
@@ -89,24 +138,27 @@ function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition">
-                    <td className="py-2">John Okafor</td>
-                    <td className="py-2">$5,000</td>
-                    <td className="py-2 text-green-600 font-semibold">Approved</td>
-                    <td className="py-2">2026-02-05</td>
-                  </tr>
-                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition">
-                    <td className="py-2">Aisha Bello</td>
-                    <td className="py-2">$2,000</td>
-                    <td className="py-2 text-yellow-500 font-semibold">Pending</td>
-                    <td className="py-2">2026-02-04</td>
-                  </tr>
-                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition">
-                    <td className="py-2">Samuel Ade</td>
-                    <td className="py-2">$10,000</td>
-                    <td className="py-2 text-red-500 font-semibold">Rejected</td>
-                    <td className="py-2">2026-02-03</td>
-                  </tr>
+                  {loading ? (
+                    <tr><td colSpan="4" className="py-4 text-center text-gray-500">Loading...</td></tr>
+                  ) : recentLoans.length === 0 ? (
+                    <tr><td colSpan="4" className="py-4 text-center text-gray-500">No recent activity</td></tr>
+                  ) : (
+                    recentLoans.map((loan, i) => (
+                      <tr key={i} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td className="py-2">{loan.customerName || "N/A"}</td>
+                        <td className="py-2">${loan.amount?.toLocaleString()}</td>
+                        <td className="py-2">
+                          <span className={`font-semibold ${
+                            loan.status === "approved" ? "text-green-600" :
+                            loan.status === "pending" ? "text-yellow-500" : "text-red-500"
+                          }`}>
+                            {loan.status}
+                          </span>
+                        </td>
+                        <td className="py-2">{new Date(loan.createdAt).toLocaleDateString()}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

@@ -1,23 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [Email, setEmail] = useState("");
+  const [Password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("https://loanbackend-tafg.onrender.com/api/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Email, Password }),
+        credentials: "include"
+      });
+      console.log(Email, Password)
+
+      const data = await response.json();
+      console.log(data)
+
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        navigate("/user-dashboard");
+      } else {
+        setError(data.message || "Login failed");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 px-6 relative">
 
-      {/* HOME CLOSE BUTTON */}
-      
-
       {/* Login Card */}
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-10 animate-pop">
-         <button
-        onClick={() => navigate("/")}
-        className="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-black p-3 rounded-full backdrop-blur-md transition duration-300"
-      >
-        <span className="text-xl font-bold">&times;</span>
-      </button>
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-10 animate-pop relative">
+
+        {/* CLOSE BUTTON */}
+        <button
+          onClick={() => navigate("/")}
+          className="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-black p-3 rounded-full backdrop-blur-md transition duration-300"
+        >
+          <span className="text-xl font-bold">&times;</span>
+        </button>
+
         {/* Logo / Brand */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-blue-700">Flashloan</h1>
@@ -26,7 +60,7 @@ function Login() {
         </div>
 
         {/* Form */}
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-semibold text-gray-600 mb-1">
               Email Address
@@ -34,6 +68,9 @@ function Login() {
             <input
               type="email"
               placeholder="you@example.com"
+              value={Email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="w-full border border-gray-300 rounded-lg px-4 h-[50px] focus:ring-2 focus:ring-blue-500 outline-none transition"
             />
           </div>
@@ -45,9 +82,18 @@ function Login() {
             <input
               type="password"
               placeholder="Enter your password"
+              value={Password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               className="w-full border border-gray-300 rounded-lg px-4 h-[50px] focus:ring-2 focus:ring-blue-500 outline-none transition"
             />
           </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
 
           <div className="flex justify-between items-center text-sm">
             <label className="flex items-center gap-2 text-gray-600">
@@ -59,11 +105,19 @@ function Login() {
             </button>
           </div>
 
+          {/* BUTTON WITH LOADER */}
           <button
             type="submit"
-            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg shadow-md transition duration-300 transform hover:-translate-y-1"
+            disabled={loading}
+            className={`w-full flex items-center justify-center gap-3
+              ${loading ? "bg-yellow-400" : "bg-yellow-500 hover:bg-yellow-600"}
+              text-black font-semibold py-3 rounded-lg shadow-md
+              transition duration-300 transform hover:-translate-y-1`}
           >
-            Login
+            {loading && (
+              <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+            )}
+            {loading ? "Authenticating..." : "Login"}
           </button>
         </form>
 
@@ -95,4 +149,5 @@ function Login() {
 }
 
 export default Login;
+
 
