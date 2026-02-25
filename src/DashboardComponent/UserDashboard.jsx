@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiHome, FiDollarSign, FiFileText, FiUser, FiLogOut, FiBell } from "react-icons/fi";
+import { FiHome, FiDollarSign, FiFileText, FiUser, FiLogOut, FiBell, FiMenu, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import ApplyLoan from "./ApplyLoan";
 
@@ -11,6 +11,7 @@ function UserDashboard() {
   const [showApplyLoan, setShowApplyLoan] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -69,7 +70,18 @@ function UserDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-100 font-sans">
-      <aside className="w-64 bg-blue-950 text-gray-100 flex flex-col">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setShowMobileMenu(!showMobileMenu)}
+        className="lg:hidden fixed top-4 left-4 z-50 bg-blue-950 text-white p-2 rounded-lg"
+      >
+        {showMobileMenu ? <FiX size={24} /> : <FiMenu size={24} />}
+      </button>
+
+      {/* Sidebar */}
+      <aside className={`${
+        showMobileMenu ? "translate-x-0" : "-translate-x-full"
+      } lg:translate-x-0 fixed lg:static w-64 h-full bg-blue-950 text-gray-100 flex flex-col transition-transform duration-300 z-40`}>
         <div className="px-6 py-4 text-2xl font-bold text-yellow-400">FlashLoan</div>
         <nav className="flex-1 px-4 space-y-2 mt-6">
           <a href="#" className="flex items-center gap-3 py-2 px-3 rounded bg-blue-800">
@@ -90,10 +102,10 @@ function UserDashboard() {
         </button>
       </aside>
 
-      <div className="flex-1 flex flex-col">
-        <header className="flex justify-between items-center bg-white px-6 py-4 shadow">
-          <h1 className="text-2xl font-bold text-blue-950">My Dashboard</h1>
-          <div className="flex items-center gap-4">
+      <div className="flex-1 flex flex-col w-full">
+        <header className="flex justify-between items-center bg-white px-4 lg:px-6 py-4 shadow">
+          <h1 className="text-xl lg:text-2xl font-bold text-blue-950 ml-12 lg:ml-0">My Dashboard</h1>
+          <div className="flex items-center gap-2 lg:gap-4">
             <div className="relative">
               <FiBell 
                 className="text-xl text-gray-600 cursor-pointer hover:text-blue-600 transition" 
@@ -105,7 +117,7 @@ function UserDashboard() {
                 </span>
               )}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                   <div className="p-4 border-b border-gray-200">
                     <h3 className="font-bold text-gray-800">Notifications</h3>
                   </div>
@@ -128,63 +140,63 @@ function UserDashboard() {
               <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-blue-950">
                 {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
               </div>
-              <span className="text-gray-700 font-medium">{user.name || user.email || "User"}</span>
+              <span className="text-gray-700 font-medium hidden sm:block">{user.name || user.email || "User"}</span>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="mb-6">
-            <h2 className="text-3xl font-bold text-blue-950">Welcome back, {user.name || user.email?.split('@')[0] || "User"}!</h2>
-            <p className="text-gray-600 mt-1">Here's an overview of your loan activity</p>
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+          <div className="mb-4 lg:mb-6">
+            <h2 className="text-2xl lg:text-3xl font-bold text-blue-950">Welcome back, {user.name || user.email?.split('@')[0] || "User"}!</h2>
+            <p className="text-gray-600 mt-1 text-sm lg:text-base">Here's an overview of your loan activity</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-              <p className="text-gray-500">Total Borrowed</p>
-              <h2 className="text-2xl font-bold text-blue-950">${totalBorrowed.toLocaleString()}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-4 lg:mb-6">
+            <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
+              <p className="text-gray-500 text-sm">Total Borrowed</p>
+              <h2 className="text-xl lg:text-2xl font-bold text-blue-950">${totalBorrowed.toLocaleString()}</h2>
             </div>
-            <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-              <p className="text-gray-500">Active Loans</p>
-              <h2 className="text-2xl font-bold text-blue-950">{activeLoans}</h2>
+            <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
+              <p className="text-gray-500 text-sm">Active Loans</p>
+              <h2 className="text-xl lg:text-2xl font-bold text-blue-950">{activeLoans}</h2>
             </div>
-            <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-              <p className="text-gray-500">Total Repaid</p>
-              <h2 className="text-2xl font-bold text-green-600">${totalRepaid.toLocaleString()}</h2>
+            <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
+              <p className="text-gray-500 text-sm">Total Repaid</p>
+              <h2 className="text-xl lg:text-2xl font-bold text-green-600">${totalRepaid.toLocaleString()}</h2>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-xl font-bold text-blue-950 mb-4">My Loans</h3>
+          <div className="bg-white p-4 lg:p-6 rounded-xl shadow">
+            <h3 className="text-lg lg:text-xl font-bold text-blue-950 mb-4">My Loans</h3>
             {loading ? (
               <p className="text-gray-500">Loading...</p>
             ) : loans.length === 0 ? (
               <p className="text-gray-500">No loans yet. Apply for your first loan!</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
+              <div className="overflow-x-auto -mx-4 lg:mx-0">
+                <table className="w-full text-left text-xs sm:text-sm">
                   <thead className="text-gray-500 uppercase text-xs border-b border-gray-200">
                     <tr>
-                      <th className="py-2">Amount</th>
-                      <th className="py-2">Status</th>
-                      <th className="py-2">Date</th>
-                      <th className="py-2">Due Date</th>
+                      <th className="py-2 px-2">Amount</th>
+                      <th className="py-2 px-2">Status</th>
+                      <th className="py-2 px-2 hidden sm:table-cell">Date</th>
+                      <th className="py-2 px-2 hidden md:table-cell">Due Date</th>
                     </tr>
                   </thead>
                   <tbody>
                     {loans.map((loan, i) => (
                       <tr key={loan._id || i} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                        <td className="py-2">${parseFloat(loan.amount || 0).toLocaleString()}</td>
-                        <td className="py-2">
-                          <span className={`font-semibold ${
+                        <td className="py-2 px-2">${parseFloat(loan.amount || 0).toLocaleString()}</td>
+                        <td className="py-2 px-2">
+                          <span className={`font-semibold text-xs sm:text-sm ${
                             loan.status === "approved" || loan.status === "active" ? "text-green-600" :
                             loan.status === "pending" ? "text-yellow-500" : "text-red-500"
                           }`}>
                             {loan.status}
                           </span>
                         </td>
-                        <td className="py-2">{loan.createdAt ? new Date(loan.createdAt).toLocaleDateString() : "N/A"}</td>
-                        <td className="py-2">{loan.dueDate ? new Date(loan.dueDate).toLocaleDateString() : "N/A"}</td>
+                        <td className="py-2 px-2 hidden sm:table-cell">{loan.createdAt ? new Date(loan.createdAt).toLocaleDateString() : "N/A"}</td>
+                        <td className="py-2 px-2 hidden md:table-cell">{loan.dueDate ? new Date(loan.dueDate).toLocaleDateString() : "N/A"}</td>
                       </tr>
                     ))}
                   </tbody>
