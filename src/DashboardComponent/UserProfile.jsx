@@ -8,6 +8,7 @@ function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({});
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -97,7 +98,22 @@ function UserProfile() {
         <header className="flex justify-between items-center bg-white px-6 py-4 shadow">
           <h1 className="text-2xl font-bold text-blue-950">My Profile</h1>
           <div className="flex items-center gap-4">
-            <FiBell className="text-xl text-gray-600 cursor-pointer" />
+            <div className="relative">
+              <FiBell 
+                className="text-xl text-gray-600 cursor-pointer hover:text-blue-600 transition" 
+                onClick={() => setShowNotifications(!showNotifications)}
+              />
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                  <div className="p-4 border-b border-gray-200">
+                    <h3 className="font-bold text-gray-800">Notifications</h3>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    <p className="p-4 text-gray-500 text-sm">No new notifications</p>
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-blue-950">
                 {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
