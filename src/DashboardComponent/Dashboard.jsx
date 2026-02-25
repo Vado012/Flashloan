@@ -24,12 +24,13 @@ function Dashboard() {
 
   const fetchAdminData = async (token) => {
     try {
-      const response = await fetch("https://loanbackend-tafg.onrender.com/api/loan", {
+      const response = await fetch("https://loanbackend-tafg.onrender.com/api/loan/all", {
         headers: { Authorization: `Bearer ${token}` },
         credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
+        console.log("Fetched loans:", data.loans || data);
         const allLoans = data.loans || data;
         
         // Calculate stats from loans
@@ -109,12 +110,18 @@ function Dashboard() {
         credentials: 'include'
       });
       
+      const data = await response.json();
+      
       if (response.ok) {
         setEditingLoan(null);
         setNewStatus("");
-        fetchAdminData(token);
+        // Force a fresh fetch with a small delay to ensure backend has updated
+        setTimeout(async () => {
+          await fetchAdminData(token);
+          await fetchNotifications(token);
+        }, 100);
       } else {
-        alert("Failed to update loan");
+        alert(data.message || "Failed to update loan");
       }
     } catch (err) {
       alert("Error updating loan");
@@ -128,10 +135,10 @@ function Dashboard() {
       <aside className="w-64 bg-blue-950 text-gray-100 flex flex-col">
         <div className="px-6 py-4 text-2xl font-bold text-yellow-400">FlashLoan</div>
         <nav className="flex-1 px-4 space-y-2 mt-6">
-          <a href="#" className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate("/dashboard"); }} className="flex items-center gap-3 py-2 px-3 rounded bg-blue-800 transition">
             <FiHome /> Dashboard
           </a>
-          <a href="#" className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate("/all-loans"); }} className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
             <FiFileText /> Loans
           </a>
           <a href="#" className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">

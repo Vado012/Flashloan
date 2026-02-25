@@ -36,7 +36,7 @@ function UserDashboard() {
     }
 
     try {
-      const response = await fetch("https://loanbackend-tafg.onrender.com/api/loan", {
+      const response = await fetch("https://loanbackend-tafg.onrender.com/api/loan/myloans", {
         headers: { Authorization: `Bearer ${token}` },
         credentials: 'include'
       });

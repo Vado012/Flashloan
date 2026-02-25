@@ -13,6 +13,7 @@ import BlogWrap from "./blogComponents/BlogWrap";
 import DashboardWrap from "./DashboardComponent/DashboardWrap";
 import UserDashboardWrap from "./DashboardComponent/UserDashboardWrap";
 import UserProfileWrap from "./DashboardComponent/UserProfileWrap";
+import AllLoansWrap from "./DashboardComponent/AllLoansWrap";
 
 /* Temporary Pages (create real components later) */
 const Services = () => <h1 className="p-10 text-3xl">Our Services</h1>;
@@ -37,6 +38,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/dashboard" element={<DashboardWrap/>} />
         <Route path="/user-dashboard" element={<UserDashboardWrap/>} />
         <Route path="/user-profile" element={<UserProfileWrap/>} />
+        <Route path="/all-loans" element={<AllLoansWrap/>} />
         <Route path="*" element={<h1 className="p-10 text-3xl">404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>

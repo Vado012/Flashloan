@@ -5,6 +5,7 @@ function ApplyLoan({ onClose, onSuccess }) {
   const [formData, setFormData] = useState({ amount: "", term: "", purpose: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,8 +27,11 @@ function ApplyLoan({ onClose, onSuccess }) {
       const data = await response.json();
 
       if (response.ok) {
-        onSuccess();
-        onClose();
+        setShowSuccess(true);
+        setTimeout(() => {
+          onSuccess();
+          onClose();
+        }, 2000);
       } else {
         setError(data.message || "Failed to apply for loan");
       }
@@ -39,8 +43,9 @@ function ApplyLoan({ onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative animate-pop">
+    <>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative animate-pop">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
           <FiX size={24} />
         </button>
@@ -121,7 +126,22 @@ function ApplyLoan({ onClose, onSuccess }) {
           }
         `}
       </style>
-    </div>
+      </div>
+
+      {showSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-[60]">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm mx-4 text-center animate-pop">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Success!</h3>
+            <p className="text-gray-600">Your loan application has been submitted successfully.</p>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
