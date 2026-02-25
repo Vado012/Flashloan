@@ -71,7 +71,7 @@ function UserDashboard() {
           <a href="#" className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
             <FiFileText /> My Loans
           </a>
-          <a href="#" className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate("/user-profile"); }} className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
             <FiUser /> Profile
           </a>
         </nav>
@@ -95,6 +95,11 @@ function UserDashboard() {
         </header>
 
         <main className="flex-1 overflow-y-auto p-6">
+          <div className="mb-6">
+            <h2 className="text-3xl font-bold text-blue-950">Welcome back, {user.name || user.email?.split('@')[0] || "User"}!</h2>
+            <p className="text-gray-600 mt-1">Here's an overview of your loan activity</p>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
               <p className="text-gray-500">Total Borrowed</p>

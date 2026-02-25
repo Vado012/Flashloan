@@ -12,6 +12,7 @@ import PageWrap from "./pagesComponent/PageWrap";
 import BlogWrap from "./blogComponents/BlogWrap";
 import DashboardWrap from "./DashboardComponent/DashboardWrap";
 import UserDashboardWrap from "./DashboardComponent/UserDashboardWrap";
+import UserProfileWrap from "./DashboardComponent/UserProfileWrap";
 
 /* Temporary Pages (create real components later) */
 const Services = () => <h1 className="p-10 text-3xl">Our Services</h1>;
@@ -35,6 +36,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/apply" element={<RegisterWrap/>} />
         <Route path="/dashboard" element={<DashboardWrap/>} />
         <Route path="/user-dashboard" element={<UserDashboardWrap/>} />
+        <Route path="/user-profile" element={<UserProfileWrap/>} />
         <Route path="*" element={<h1 className="p-10 text-3xl">404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>
