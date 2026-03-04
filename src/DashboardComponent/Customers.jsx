@@ -27,10 +27,13 @@ function Customers() {
       });
       if (response.ok) {
         const data = await response.json();
+        console.log("Fetched customers:", data);
         setCustomers(data.users || data);
+      } else {
+        console.error("Failed to fetch customers:", response.status);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching customers:", err);
     }
     setLoading(false);
   };

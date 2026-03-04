@@ -75,9 +75,9 @@ function ApplyLoan({ onClose, onSuccess }) {
               className="w-full border border-gray-300 rounded-lg px-4 h-12 focus:ring-2 focus:ring-blue-500 outline-none"
             >
               <option value="">Select duration</option>
-              <option value="3">6 months</option>
-              <option value="6">12 months</option>
-              <option value="12">18 months</option>
+              <option value="6">6 months</option>
+              <option value="12">12 months</option>
+              <option value="18">18 months</option>
               <option value="24">24 months</option>
             </select>
           </div>

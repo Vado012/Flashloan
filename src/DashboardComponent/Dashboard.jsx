@@ -96,6 +96,21 @@ function Dashboard() {
     }
   };
 
+  const fetchAllUsers = async () => {
+  const response = await fetch('https://loanbackend-tafg.onrender.com/api/user/allusers', {
+    credentials: 'include',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  const data = await response.json();
+  if (data.success) {
+    // data.users contains all users
+    console.log(data.users);
+  }
+};
+
+
   const handleUpdateLoan = async (loanId) => {
     if (!newStatus) return;
     
