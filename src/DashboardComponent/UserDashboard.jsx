@@ -65,6 +65,7 @@ function UserDashboard() {
   };
 
   const activeLoans = loans.filter(l => l.status === "approved" || l.status === "active").length;
+  const totalLoans = loans.length;
   const totalBorrowed = loans.reduce((sum, l) => sum + (parseFloat(l.amount) || 0), 0);
   const totalRepaid = loans.reduce((sum, l) => sum + (parseFloat(l.repaid) || 0), 0);
 
@@ -153,6 +154,10 @@ function UserDashboard() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-4 lg:mb-6">
             <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
+              <p className="text-gray-500 text-sm">Total Loans</p>
+              <h2 className="text-xl lg:text-2xl font-bold text-blue-950">{totalLoans}</h2>
+            </div>
+            <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
               <p className="text-gray-500 text-sm">Total Borrowed</p>
               <h2 className="text-xl lg:text-2xl font-bold text-blue-950">${totalBorrowed.toLocaleString()}</h2>
             </div>
@@ -161,8 +166,8 @@ function UserDashboard() {
               <h2 className="text-xl lg:text-2xl font-bold text-blue-950">{activeLoans}</h2>
             </div>
             <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
-              <p className="text-gray-500 text-sm">Total Repaid</p>
-              <h2 className="text-xl lg:text-2xl font-bold text-green-600">${totalRepaid.toLocaleString()}</h2>
+              <p className="text-gray-500 text-sm">Active Loans</p>
+              <h2 className="text-xl lg:text-2xl font-bold text-blue-950">{activeLoans}</h2>
             </div>
           </div>
 
