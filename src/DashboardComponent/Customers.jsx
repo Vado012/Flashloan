@@ -21,16 +21,31 @@ function Customers() {
   const fetchCustomers = async (token) => {
     setLoading(true);
     try {
-      const response = await fetch("https://loanbackend-tafg.onrender.com/api/user", {
+      // Try multiple endpoints
+      let response = await fetch("https://loanbackend-tafg.onrender.com/api/user/all", {
         headers: { Authorization: `Bearer ${token}` },
         credentials: 'include'
       });
+      
+      if (!response.ok) {
+        // Try alternative endpoint
+        response = await fetch("https://loanbackend-tafg.onrender.com/api/user", {
+          headers: { Authorization: `Bearer ${token}` },
+          credentials: 'include'
+        });
+      }
+      
       if (response.ok) {
         const data = await response.json();
         console.log("Fetched customers:", data);
-        setCustomers(data.users || data);
+        // Try different possible data structures
+        const users = data.users || data.data || (Array.isArray(data) ? data : []);
+        console.log("Parsed users:", users);
+        setCustomers(users);
       } else {
         console.error("Failed to fetch customers:", response.status);
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Error details:", errorData);
       }
     } catch (err) {
       console.error("Error fetching customers:", err);
