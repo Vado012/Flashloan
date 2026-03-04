@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiHome, FiUser, FiFileText, FiPieChart, FiSettings, FiBell, FiLogOut, FiTrash2, FiEdit } from "react-icons/fi";
+import { FiHome, FiUser, FiFileText, FiPieChart, FiSettings, FiBell, FiLogOut, FiTrash2, FiEdit, FiMenu, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
@@ -11,6 +11,7 @@ function Dashboard() {
   const [newStatus, setNewStatus] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -130,9 +131,16 @@ function Dashboard() {
 
   return (
     <div className="flex h-screen bg-gray-100 font-sans">
+      <button
+        onClick={() => setShowMobileMenu(!showMobileMenu)}
+        className="lg:hidden fixed top-4 left-4 z-50 bg-blue-950 text-white p-2 rounded-lg"
+      >
+        {showMobileMenu ? <FiX size={24} /> : <FiMenu size={24} />}
+      </button>
 
-      {/* Sidebar */}
-      <aside className="w-64 bg-blue-950 text-gray-100 flex flex-col">
+      <aside className={`${
+        showMobileMenu ? "translate-x-0" : "-translate-x-full"
+      } lg:translate-x-0 fixed lg:static w-64 h-full bg-blue-950 text-gray-100 flex flex-col transition-transform duration-300 z-40`}>
         <div className="px-6 py-4 text-2xl font-bold text-yellow-400">FlashLoan</div>
         <nav className="flex-1 px-4 space-y-2 mt-6">
           <a href="#" onClick={(e) => { e.preventDefault(); navigate("/dashboard"); }} className="flex items-center gap-3 py-2 px-3 rounded bg-blue-800 transition">
@@ -156,13 +164,11 @@ function Dashboard() {
         </button>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col w-full">
 
-        {/* Top Navbar */}
-        <header className="flex justify-between items-center bg-white px-6 py-4 shadow">
-          <h1 className="text-2xl font-bold text-blue-950">Dashboard</h1>
-          <div className="flex items-center gap-4">
+        <header className="flex justify-between items-center bg-white px-4 lg:px-6 py-4 shadow">
+          <h1 className="text-xl lg:text-2xl font-bold text-blue-950 ml-12 lg:ml-0">Dashboard</h1>
+          <div className="flex items-center gap-2 lg:gap-4">
             <div className="relative">
               <FiBell 
                 className="text-xl text-gray-600 cursor-pointer hover:text-blue-600 transition" 
@@ -174,7 +180,7 @@ function Dashboard() {
                 </span>
               )}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                   <div className="p-4 border-b border-gray-200">
                     <h3 className="font-bold text-gray-800">Notifications</h3>
                   </div>
@@ -195,14 +201,13 @@ function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-blue-950">A</div>
-              <span className="text-gray-700 font-medium">Admin</span>
+              <span className="text-gray-700 font-medium hidden sm:block">Admin</span>
             </div>
           </div>
         </header>
 
-        {/* Stats Cards */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-4 lg:mb-6">
             <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
               <p className="text-gray-500">Total Loans</p>
               <h2 className="text-2xl font-bold text-blue-950">{loading ? "..." : stats.totalLoans?.toLocaleString()}</h2>
