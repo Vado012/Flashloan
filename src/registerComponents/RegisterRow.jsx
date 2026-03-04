@@ -5,6 +5,8 @@ import { X } from "lucide-react";
 function RegisterRow() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
   let [formData,setFormData] = useState({
     Firstname:"",
     Lastname:"",
@@ -20,19 +22,38 @@ function RegisterRow() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
-    const response = await fetch("https://loanbackend-tafg.onrender.com/api/user",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify(formData)
-    })
+    try {
+      const response = await fetch("https://loanbackend-tafg.onrender.com/api/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData),
+        credentials: "include"
+      });
 
-    let data = await response.json();
-    console.log(data);
-    setLoading(false);
+      const data = await response.json();
+      console.log("Registration response:", data);
 
+      if (response.ok) {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          console.log("Token saved:", data.token);
+        }
+        setShowSuccess(true);
+        setTimeout(() => {
+          navigate("/user-dashboard");
+        }, 1500);
+      } else {
+        setError(data.message || "Registration failed");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -69,6 +90,11 @@ function RegisterRow() {
         
           <input type="password" placeholder="Create Password" onChange={handleChange} className="input" name="Password" required />
         
+          {error && (
+            <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
 
           <div className="flex items-start gap-2 text-sm text-gray-600">
             <input type="checkbox" className="mt-1 accent-blue-600" required />
@@ -131,6 +157,19 @@ function RegisterRow() {
         `}
       </style>
 
+      {showSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-[60] bg-black/30">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm mx-4 text-center animate-pop">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Sign Up Successful!</h3>
+            <p className="text-gray-600">Redirecting to your dashboard...</p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

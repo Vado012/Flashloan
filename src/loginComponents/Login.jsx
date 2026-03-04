@@ -7,6 +7,7 @@ function Login() {
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,11 +24,17 @@ function Login() {
       console.log(Email, Password)
 
       const data = await response.json();
-      console.log(data)
+      console.log("Login response:", data);
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
-        navigate("/user-dashboard");
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          console.log("Token saved:", data.token);
+        }
+        setShowSuccess(true);
+        setTimeout(() => {
+          navigate("/user-dashboard");
+        }, 1500);
       } else {
         setError(data.message || "Login failed");
       }
@@ -124,7 +131,7 @@ function Login() {
         <p className="text-center text-gray-600 text-sm mt-6">
           Don’t have an account?{" "}
           <span
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/apply")}
             className="text-blue-600 font-semibold cursor-pointer hover:underline"
           >
             Register
@@ -144,6 +151,20 @@ function Login() {
           }
         `}
       </style>
+
+      {showSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-[60] bg-black/30">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm mx-4 text-center animate-pop">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Login Successful!</h3>
+            <p className="text-gray-600">Redirecting to your dashboard...</p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
