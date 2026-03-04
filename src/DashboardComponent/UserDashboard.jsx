@@ -90,7 +90,7 @@ function UserDashboard() {
           <a href="#" onClick={(e) => { e.preventDefault(); setShowApplyLoan(true); }} className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
             <FiDollarSign /> Apply for Loan
           </a>
-          <a href="#" className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate("/my-loans"); }} className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
             <FiFileText /> My Loans
           </a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigate("/user-profile"); }} className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiHome, FiDollarSign, FiFileText, FiUser, FiLogOut, FiBell, FiMail, FiPhone, FiMapPin } from "react-icons/fi";
+import { FiHome, FiDollarSign, FiFileText, FiUser, FiLogOut, FiBell, FiMail, FiPhone, FiMapPin, FiMenu, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 function UserProfile() {
@@ -9,6 +9,7 @@ function UserProfile() {
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -73,7 +74,16 @@ function UserProfile() {
 
   return (
     <div className="flex h-screen bg-gray-100 font-sans">
-      <aside className="w-64 bg-blue-950 text-gray-100 flex flex-col">
+      <button
+        onClick={() => setShowMobileMenu(!showMobileMenu)}
+        className="lg:hidden fixed top-4 left-4 z-50 bg-blue-950 text-white p-2 rounded-lg"
+      >
+        {showMobileMenu ? <FiX size={24} /> : <FiMenu size={24} />}
+      </button>
+
+      <aside className={`${
+        showMobileMenu ? "translate-x-0" : "-translate-x-full"
+      } lg:translate-x-0 fixed lg:static w-64 h-full bg-blue-950 text-gray-100 flex flex-col transition-transform duration-300 z-40`}>
         <div className="px-6 py-4 text-2xl font-bold text-yellow-400">FlashLoan</div>
         <nav className="flex-1 px-4 space-y-2 mt-6">
           <a href="#" onClick={(e) => { e.preventDefault(); navigate("/user-dashboard"); }} className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
@@ -94,10 +104,10 @@ function UserProfile() {
         </button>
       </aside>
 
-      <div className="flex-1 flex flex-col">
-        <header className="flex justify-between items-center bg-white px-6 py-4 shadow">
-          <h1 className="text-2xl font-bold text-blue-950">My Profile</h1>
-          <div className="flex items-center gap-4">
+      <div className="flex-1 flex flex-col w-full">
+        <header className="flex justify-between items-center bg-white px-4 lg:px-6 py-4 shadow">
+          <h1 className="text-xl lg:text-2xl font-bold text-blue-950 ml-12 lg:ml-0">My Profile</h1>
+          <div className="flex items-center gap-2 lg:gap-4">
             <div className="relative">
               <FiBell 
                 className="text-xl text-gray-600 cursor-pointer hover:text-blue-600 transition" 
@@ -118,20 +128,20 @@ function UserProfile() {
               <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-blue-950">
                 {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
               </div>
-              <span className="text-gray-700 font-medium">{user.name || user.email || "User"}</span>
+              <span className="text-gray-700 font-medium hidden sm:block">{user.name || user.email || "User"}</span>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-xl shadow-lg p-8">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-blue-950">Profile Information</h2>
+            <div className="bg-white rounded-xl shadow-lg p-6 lg:p-8">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h2 className="text-xl lg:text-2xl font-bold text-blue-950">Profile Information</h2>
                 {!editing && (
                   <button
                     onClick={() => setEditing(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition text-sm lg:text-base"
                   >
                     Edit Profile
                   </button>
@@ -182,17 +192,17 @@ function UserProfile() {
                     />
                   </div>
 
-                  <div className="flex gap-3 pt-4">
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
                     <button
                       type="submit"
-                      className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition"
+                      className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition text-sm lg:text-base"
                     >
                       Save Changes
                     </button>
                     <button
                       type="button"
                       onClick={() => { setEditing(false); setFormData(user); }}
-                      className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-3 rounded-lg transition"
+                      className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-3 rounded-lg transition text-sm lg:text-base"
                     >
                       Cancel
                     </button>

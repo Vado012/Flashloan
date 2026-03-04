@@ -149,7 +149,7 @@ function Dashboard() {
           <a href="#" onClick={(e) => { e.preventDefault(); navigate("/all-loans"); }} className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
             <FiFileText /> Loans
           </a>
-          <a href="#" className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate("/customers"); }} className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">
             <FiUser /> Customers
           </a>
           <a href="#" className="flex items-center gap-3 py-2 px-3 rounded hover:bg-blue-800 transition">

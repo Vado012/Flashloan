@@ -14,6 +14,8 @@ import DashboardWrap from "./DashboardComponent/DashboardWrap";
 import UserDashboardWrap from "./DashboardComponent/UserDashboardWrap";
 import UserProfileWrap from "./DashboardComponent/UserProfileWrap";
 import AllLoansWrap from "./DashboardComponent/AllLoansWrap";
+import MyLoansWrap from "./DashboardComponent/MyLoansWrap";
+import CustomersWrap from "./DashboardComponent/CustomersWrap";
 
 /* Temporary Pages (create real components later) */
 const Services = () => <h1 className="p-10 text-3xl">Our Services</h1>;
@@ -39,6 +41,8 @@ createRoot(document.getElementById("root")).render(
         <Route path="/user-dashboard" element={<UserDashboardWrap/>} />
         <Route path="/user-profile" element={<UserProfileWrap/>} />
         <Route path="/all-loans" element={<AllLoansWrap/>} />
+        <Route path="/my-loans" element={<MyLoansWrap/>} />
+        <Route path="/customers" element={<CustomersWrap/>} />
         <Route path="*" element={<h1 className="p-10 text-3xl">404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>
