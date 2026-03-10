@@ -8,6 +8,11 @@ function Login() {
   const [Password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
+  const [resetError, setResetError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,6 +47,39 @@ function Login() {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setResetLoading(true);
+    setResetError("");
+    setResetMessage("");
+
+    try {
+      const response = await fetch("https://loanbackend-tafg.onrender.com/api/user/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail }),
+        credentials: "include"
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResetMessage("Password reset link sent to your email!");
+        setTimeout(() => {
+          setShowForgotPassword(false);
+          setResetEmail("");
+          setResetMessage("");
+        }, 3000);
+      } else {
+        setResetError(data.message || "Failed to send reset link");
+      }
+    } catch (err) {
+      setResetError("Network error. Please try again.");
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -107,7 +145,7 @@ function Login() {
               <input type="checkbox" className="accent-blue-600" />
               Remember me
             </label>
-            <button type="button" className="text-blue-600 hover:underline">
+            <button type="button" onClick={() => setShowForgotPassword(true)} className="text-blue-600 hover:underline">
               Forgot password?
             </button>
           </div>
@@ -162,6 +200,61 @@ function Login() {
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Login Successful!</h3>
             <p className="text-gray-600">Redirecting to your dashboard...</p>
+          </div>
+        </div>
+      )}
+
+      {showForgotPassword && (
+        <div className="fixed inset-0 flex items-center justify-center z-[60] bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative animate-pop">
+            <button
+              onClick={() => { setShowForgotPassword(false); setResetEmail(""); setResetError(""); setResetMessage(""); }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <span className="text-2xl">&times;</span>
+            </button>
+
+            <h2 className="text-2xl font-bold text-blue-950 mb-2">Forgot Password?</h2>
+            <p className="text-gray-600 text-sm mb-6">Enter your email and we'll send you a reset link</p>
+
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-600 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full border border-gray-300 rounded-lg px-4 h-12 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+
+              {resetError && (
+                <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  {resetError}
+                </div>
+              )}
+
+              {resetMessage && (
+                <div className="bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-lg text-sm">
+                  {resetMessage}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={resetLoading}
+                className={`w-full flex items-center justify-center gap-3 ${
+                  resetLoading ? "bg-yellow-400" : "bg-yellow-500 hover:bg-yellow-600"
+                } text-black font-semibold py-3 rounded-lg shadow-md transition`}
+              >
+                {resetLoading && (
+                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                )}
+                {resetLoading ? "Sending..." : "Send Reset Link"}
+              </button>
+            </form>
           </div>
         </div>
       )}
