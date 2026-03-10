@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiHome, FiDollarSign, FiFileText, FiUser, FiLogOut, FiBell, FiMenu, FiX, FiMoon, FiSun } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import ApplyLoan from "./ApplyLoan";
+import { useDarkMode } from "../DarkModeContext";
 
 function UserDashboard() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ function UserDashboard() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
+  const { darkMode, toggleDarkMode } = useDarkMode();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -65,19 +66,13 @@ function UserDashboard() {
     navigate("/login");
   };
 
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem("darkMode", newMode);
-  };
-
   const activeLoans = loans.filter(l => l.status === "approved" || l.status === "active").length;
   const totalLoans = loans.length;
   const totalBorrowed = loans.reduce((sum, l) => sum + (parseFloat(l.amount) || 0), 0);
   const totalRepaid = loans.reduce((sum, l) => sum + (parseFloat(l.repaid) || 0), 0);
 
   return (
-    <div className="flex h-screen bg-gray-100 font-sans">
+    <div className={`flex h-screen font-sans ${darkMode ? "bg-gray-900" : "bg-gray-100"}`}>
       {/* Mobile Menu Button */}
       <button
         onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -159,24 +154,24 @@ function UserDashboard() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main className={`flex-1 overflow-y-auto p-4 lg:p-6 ${darkMode ? "bg-gray-900" : ""}`}>
           <div className="mb-4 lg:mb-6">
             <h2 className="text-2xl lg:text-3xl font-bold text-blue-950">Welcome back, {user.name || user.email?.split('@')[0] || "User"}!</h2>
             <p className="text-gray-600 mt-1 text-sm lg:text-base">Here's an overview of your loan activity</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-4 lg:mb-6">
-            <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
-              <p className="text-gray-500 text-sm">Total Loans</p>
-              <h2 className="text-xl lg:text-2xl font-bold text-blue-950">{totalLoans}</h2>
+            <div className={`bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition ${darkMode ? "bg-gray-800" : "bg-white"}`}>
+              <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Total Loans</p>
+              <h2 className={`text-xl lg:text-2xl font-bold ${darkMode ? "text-white" : "text-blue-950"}`}>{totalLoans}</h2>
             </div>
-            <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
-              <p className="text-gray-500 text-sm">Total Borrowed</p>
-              <h2 className="text-xl lg:text-2xl font-bold text-blue-950">${totalBorrowed.toLocaleString()}</h2>
+            <div className={`bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition ${darkMode ? "bg-gray-800" : "bg-white"}`}>
+              <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Total Borrowed</p>
+              <h2 className={`text-xl lg:text-2xl font-bold ${darkMode ? "text-white" : "text-blue-950"}`}>${totalBorrowed.toLocaleString()}</h2>
             </div>
-            <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
-              <p className="text-gray-500 text-sm">Active Loans</p>
-              <h2 className="text-xl lg:text-2xl font-bold text-blue-950">{activeLoans}</h2>
+            <div className={`bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition ${darkMode ? "bg-gray-800" : "bg-white"}`}>
+              <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Active Loans</p>
+              <h2 className={`text-xl lg:text-2xl font-bold ${darkMode ? "text-white" : "text-blue-950"}`}>{activeLoans}</h2>
             </div>
             <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
               <p className="text-gray-500 text-sm">Active Loans</p>
@@ -184,8 +179,8 @@ function UserDashboard() {
             </div>
           </div>
 
-          <div className="bg-white p-4 lg:p-6 rounded-xl shadow">
-            <h3 className="text-lg lg:text-xl font-bold text-blue-950 mb-4">My Loans</h3>
+          <div className={`p-4 lg:p-6 rounded-xl shadow ${darkMode ? "bg-gray-800" : "bg-white"}`}>
+            <h3 className={`text-lg lg:text-xl font-bold mb-4 ${darkMode ? "text-white" : "text-blue-950"}`}>My Loans</h3>
             {loading ? (
               <p className="text-gray-500">Loading...</p>
             ) : loans.length === 0 ? (

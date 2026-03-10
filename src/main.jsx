@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import HomeWrap from "./homeComponents/HomeWrap";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { DarkModeProvider } from "./DarkModeContext";
 import AboutWrap from "./aboutComponents/AboutWrap";
 import ContactWrap from "./contactComponents/ContactWrap";
 import ServicesWrap from "./servicesComponents/ServicesWrap";
@@ -27,7 +28,8 @@ const Apply = () => <h1 className="p-10 text-3xl">Loan Application</h1>;
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
+    <DarkModeProvider>
+      <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomeWrap />} />
         <Route path="/aboutUs" element={<AboutWrap/>} />
@@ -46,5 +48,6 @@ createRoot(document.getElementById("root")).render(
         <Route path="*" element={<h1 className="p-10 text-3xl">404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>
+    </DarkModeProvider>
   </StrictMode>
 );
