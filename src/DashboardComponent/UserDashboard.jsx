@@ -163,15 +163,15 @@ function UserDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-4 lg:mb-6">
             <div className={`bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition ${darkMode ? "bg-gray-800" : "bg-white text-black"}`}>
               <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Total Loans</p>
-              <h2 className={`text-xl lg:text-2xl font-bold ${darkMode ? "text-white" : "text-blue-950"}`}>{totalLoans}</h2>
+              <h2 className={`text-xl lg:text-2xl font-bold ${darkMode ? "text-black" : "text-blue-950"}`}>{totalLoans}</h2>
             </div>
             <div className={`bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition ${darkMode ? "bg-gray-800" : "bg-white text-black" }`}>
               <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Total Borrowed</p>
-              <h2 className={`text-xl lg:text-2xl font-bold ${darkMode ? "text-white" : "text-blue-950"}`}>${totalBorrowed.toLocaleString()}</h2>
+              <h2 className={`text-xl lg:text-2xl font-bold ${darkMode ? "text-black" : "text-blue-950"}`}>${totalBorrowed.toLocaleString()}</h2>
             </div>
             <div className={`bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition ${darkMode ? "bg-gray-800" : "bg-white text-black"}`}>
               <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Active Loans</p>
-              <h2 className={`text-xl lg:text-2xl font-bold ${darkMode ? "text-white" : "text-blue-950"}`}>{activeLoans}</h2>
+              <h2 className={`text-xl lg:text-2xl font-bold ${darkMode ? "text-black" : "text-blue-950"}`}>{activeLoans}</h2>
             </div>
             <div className="bg-white p-4 lg:p-5 rounded-xl shadow hover:shadow-lg transition">
               <p className="text-gray-500 text-sm">Active Loans</p>
