@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiHome, FiDollarSign, FiFileText, FiUser, FiLogOut, FiBell, FiMenu, FiX } from "react-icons/fi";
+import { FiHome, FiDollarSign, FiFileText, FiUser, FiLogOut, FiBell, FiMenu, FiX, FiMoon, FiSun } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import ApplyLoan from "./ApplyLoan";
 
@@ -12,6 +12,7 @@ function UserDashboard() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -64,6 +65,12 @@ function UserDashboard() {
     navigate("/login");
   };
 
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem("darkMode", newMode);
+  };
+
   const activeLoans = loans.filter(l => l.status === "approved" || l.status === "active").length;
   const totalLoans = loans.length;
   const totalBorrowed = loans.reduce((sum, l) => sum + (parseFloat(l.amount) || 0), 0);
@@ -104,9 +111,15 @@ function UserDashboard() {
       </aside>
 
       <div className="flex-1 flex flex-col w-full">
-        <header className="flex justify-between items-center bg-white px-4 lg:px-6 py-4 shadow">
-          <h1 className="text-xl lg:text-2xl font-bold text-blue-950 ml-12 lg:ml-0">My Dashboard</h1>
+        <header className={`flex justify-between items-center px-4 lg:px-6 py-4 shadow ${darkMode ? "bg-gray-800" : "bg-white"}`}>
+          <h1 className={`text-xl lg:text-2xl font-bold ml-12 lg:ml-0 ${darkMode ? "text-white" : "text-blue-950"}`}>My Dashboard</h1>
           <div className="flex items-center gap-2 lg:gap-4">
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-lg transition ${darkMode ? "bg-gray-700 text-yellow-400 hover:bg-gray-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+            >
+              {darkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
+            </button>
             <div className="relative">
               <FiBell 
                 className="text-xl text-gray-600 cursor-pointer hover:text-blue-600 transition" 
@@ -141,7 +154,7 @@ function UserDashboard() {
               <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-blue-950">
                 {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
               </div>
-              <span className="text-gray-700 font-medium hidden sm:block">{user.name || user.email || "User"}</span>
+              <span className={`text-gray-700 font-medium hidden sm:block ${darkMode ? "text-gray-200" : "text-gray-700"}`}>{user.name || user.email || "User"}</span>
             </div>
           </div>
         </header>
