@@ -44,7 +44,7 @@ function RegisterRow() {
         }
         setShowSuccess(true);
         setTimeout(() => {
-          navigate("/user-dashboard");
+          navigate("/verify-otp", { state: { email: formData.Email, token: data.token } });
         }, 1500);
       } else {
         setError(data.message || "Registration failed");
